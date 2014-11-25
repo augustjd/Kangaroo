@@ -27,6 +27,5 @@ TEST(SphereTest, SphereMissingRayMisses) {
   Sphere s(Vector3d(10.0,0.0,0.0), 5.0);
 
   Intersection miss_int = s.intersect(miss);
-  cout << miss_int.location() << endl;
   ASSERT_TRUE(miss_int.isNone());
 }
