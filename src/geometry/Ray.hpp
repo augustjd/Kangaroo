@@ -8,24 +8,27 @@ using namespace Eigen;
 class Ray {
 public:
   Ray (const Vector3d& direction_) :
-    _start(Vector3d(0,0,0)),
+    _origin(Vector3d(0,0,0)),
     _direction(direction_.normalized()) {};
 
-  Ray (const Vector3d& start_, const Vector3d& direction_) : 
-    _start(start_), 
+  Ray (const Vector3d& origin_, const Vector3d& direction_) : 
+    _origin(origin_), 
     _direction(direction_.normalized()) {};
 
   virtual ~Ray() {};
 
-  const Vector3d& start() { return _start; };
-  const Vector3d& direction() { return _direction; };
+  const Vector3d& origin() const { return _origin; };
+  const Vector3d& direction() const { return _direction; };
+
+  Ray flipped() const { return Ray(_origin, -_direction); };
+  Vector3d along(double distance) const { return _origin + (_direction * distance); };
 private:
-  Vector3d _start;
+  Vector3d _origin;
   Vector3d _direction;
 };
 
 std::ostream& operator<< (std::ostream& out, Ray obj) {
-  return out << "Ray((" << obj.start().transpose() << ") -> <" << obj.direction().transpose() << ">)";
+  return out << "Ray((" << obj.origin().transpose() << ") -> <" << obj.direction().transpose() << ">)";
 }
 
 
