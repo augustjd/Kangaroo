@@ -18,7 +18,7 @@ target_link_libraries(${TEST_EXECUTABLE_NAME} pthread)
 find_package(Eigen3 REQUIRED)
 include_directories (${EIGEN3_INCLUDE_DIR})
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(SFML 1.6 REQUIRED system window graphics network audio)
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 

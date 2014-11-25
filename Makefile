@@ -22,6 +22,8 @@ $(BUILD)/$(TEST_MAIN): $(BUILD) $(BUILD)/CMakeCache.txt CMakeLists.txt
 $(BUILD)/CMakeCache.txt: CMakeLists.txt
 	cd $(BUILD); cmake ..
 
+remake: $(BUILD)/$(MAIN) $(BUILD)/$(TEST_MAIN)
+
 $(BUILD):
 	mkdir $(BUILD)
 
