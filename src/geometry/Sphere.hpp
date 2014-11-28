@@ -2,6 +2,7 @@
 #define __SPHERE_H__
 
 #include "Surface.hpp"
+#include "Formatting.hpp"
 
 using namespace std;
 
@@ -37,8 +38,10 @@ private:
   double _radius;
 };
 
-std::ostream& operator<< (std::ostream& out, Sphere obj) {
-  return out << "Sphere(r=" << obj.radius() << ", center=(" << obj.center().transpose() << "))";
+std::ostream& operator<< (std::ostream& out, const Sphere& obj) {
+  return out << BOLD_BLUE("Sphere")"("
+    << BOLD_GREEN("r") "=" << obj.radius() << ", "
+    << BOLD_GREEN("center") "=" << obj.center() << ")";
 }
 
 #endif /* end of include guard: __SPHERE_H__ */

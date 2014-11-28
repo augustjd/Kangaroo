@@ -2,10 +2,12 @@
 #define __RAY_H__
 
 #include <Eigen/Dense>
+#include "Formatting.hpp"
 
 using namespace Eigen;
 
 class Ray {
+  friend ostream& operator<< (ostream&, const Ray&);
 public:
   Ray (const Vector3d& direction_) :
     _origin(Vector3d(0,0,0)),
@@ -27,8 +29,10 @@ private:
   Vector3d _direction;
 };
 
-std::ostream& operator<< (std::ostream& out, Ray obj) {
-  return out << "Ray((" << obj.origin().transpose() << ") -> <" << obj.direction().transpose() << ">)";
+std::ostream& operator<< (std::ostream& out, const Ray& obj) {
+  return out << BOLD_BLUE("Ray") "(" 
+    << BOLD_GREEN("origin") "=" << obj.origin() << ", "
+    << BOLD_GREEN("direction") "=" << obj.direction() << ")";
 }
 
 
