@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 2.6)
 project(kangaroo)
 set(EXECUTABLE_NAME "kangaroo")
 set(TEST_EXECUTABLE_NAME "${EXECUTABLE_NAME}_tests")
+set(CMAKE_BUILD_TYPE Debug)
 add_executable(${EXECUTABLE_NAME} src/main.cpp)
 
+add_definitions(
+	-std=c++1y
+	)
 # Locate GTest
 include_directories (./src/)
 enable_testing()
