@@ -10,7 +10,7 @@ using namespace std;
 
 TriangleTest(TrianglePrintFormatting) {
   const Triangle t(Vector3d(1.0, 0, 0), Vector3d(2, 0, 0), Vector3d(1, 1, 0));
-  cout << t << endl;
+  //cout << t << endl;
 }
 
 TriangleTest(Normal) {

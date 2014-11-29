@@ -20,7 +20,6 @@ TEST(SphereTest, SphereIntersectionGivesNearest) {
   Intersection hit_int = s.intersect(hit);
 
   ASSERT_EQ(hit_int.location(), Vector3d(5.0, 0.0, 0.0));
-  cout << s << endl;
 }
 
 TEST(SphereTest, SphereMissingRayMisses) {
