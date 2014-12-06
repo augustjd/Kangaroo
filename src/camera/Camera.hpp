@@ -2,7 +2,7 @@
 #define __CAMERA_H__
 
 #include <SFML/Graphics.hpp>
-#include "Formatting.hpp"
+#include "../Formatting.hpp"
 
 using namespace std;
 
@@ -24,9 +24,9 @@ public:
 
   Vector3d pixel_position(size_t x, size_t y) {
       return Vector3d(
-              -width() / 2  + (x + 0.5)_size.x() / width(),
-              -height() / 2 + (y + 0.5)_size.y() / height(),
-              focal_length
+              -width() / 2  + (x + 0.5)*_size.x() / width(),
+              -height() / 2 + (y + 0.5)*_size.y() / height(),
+              _focal_length
               );
   }
 
