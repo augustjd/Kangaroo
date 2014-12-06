@@ -1,7 +1,7 @@
 #include "SquarePixelSamplingStrategy.hpp"
 
 Pixel SquarePixelSamplingStrategy::next() {
-    if (_squares_across == _squares_down) {
+    if (_square_row == _squares_down) {
         return Pixel::Invalid(); 
     }
 

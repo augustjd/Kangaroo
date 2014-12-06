@@ -14,6 +14,8 @@ public:
     static Pixel Invalid() { return Pixel(); };
 
     operator bool() const { return valid; };
+
+    bool operator== (const Pixel& r) { return x == r.x && y == r.y; };
 private:
     Pixel() : x(0), y(0), valid(false) {};
 };

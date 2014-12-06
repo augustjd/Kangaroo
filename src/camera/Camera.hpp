@@ -3,14 +3,19 @@
 
 #include <SFML/Graphics.hpp>
 #include "../Formatting.hpp"
+#include "camera/PixelSamplingStrategy.hpp"
+#include <memory>
+
 
 using namespace std;
 
 class Camera {
 public:
-  Camera(const Vector2d& size, double focal_length, sf::Image& output) : 
+  Camera(const Vector2d& size, double focal_length, sf::Image& output, shared_ptr<PixelSamplingStrategy> sampling) : 
     _size(size), _focal_length(focal_length), _output(output),
-    sample_count(output.getSize().y) {
+    sample_count(output.getSize().y),
+    pixel_sampler(sampling)
+    {
       _texture.loadFromImage(output);
       reset_image();
       _sprite.setTexture(_texture, true);
@@ -43,15 +48,10 @@ public:
     return to_color((current * samples + sample) / (samples + 1));
   }
 
-  size_t next = 0;
   void make_sample() {
-    if (next < pixel_count()) {
-      size_t x = next % width();
-      size_t y = next / width();
-
-      update_with_sample(x, y, sf::Color::Black);
-
-      next += 1;
+    Pixel p = pixel_sampler->next();
+    if (p) {
+      update_with_sample(p.x, p.y, sf::Color::Black);
     }
   }
 
@@ -100,6 +100,8 @@ private:
   sf::Image& _output;
   sf::Texture _texture;
   sf::Sprite _sprite;
+
+  shared_ptr<PixelSamplingStrategy> pixel_sampler;
 };
 
 #endif /* end of include guard: __CAMERA_H__ */

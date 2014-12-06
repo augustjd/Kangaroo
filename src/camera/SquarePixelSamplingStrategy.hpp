@@ -7,6 +7,11 @@
 // can guarantee complete coverage of the grid, as below.
 #define CEIL_DIV(num, denom) num % denom == 0 ? num / denom : num / denom + 1
 
+#include <iostream>
+
+using namespace std;
+
+
 class SquarePixelSamplingStrategy : public PixelSamplingStrategy {
 public:
     SquarePixelSamplingStrategy(size_t x, size_t y, size_t square_size = 50) : 

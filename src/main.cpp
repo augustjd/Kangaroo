@@ -6,6 +6,9 @@
 
 #include "geometry/Ray.hpp"
 #include "camera/Camera.hpp"
+#include "sampling/Sampler.hpp"
+
+#include "camera/SquarePixelSamplingStrategy.hpp"
 
 using namespace std;
 using namespace Eigen;
@@ -32,7 +35,8 @@ int main(int argc, const char** argv)
     image.create(render_width, render_height, sf::Color(255,0,0));
 
     double focal_length = 1.0;
-    Camera cam(Vector2d(render_width, render_height), focal_length, image);
+    auto pixel_sampling_strategy = make_shared<SquarePixelSamplingStrategy>(render_width, render_height);
+    Camera cam(Vector2d(render_width, render_height), focal_length, image, pixel_sampling_strategy);
     while (window.isOpen())
     {
         sf::Event event;

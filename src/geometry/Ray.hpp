@@ -24,7 +24,7 @@ public:
 
   Ray flipped() const { return Ray(_origin, -_direction); };
   Vector3d along(double distance) const { return _origin + (_direction * distance); };
-private:
+protected:
   Vector3d _origin;
   Vector3d _direction;
 };
