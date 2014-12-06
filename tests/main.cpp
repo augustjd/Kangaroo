@@ -4,6 +4,7 @@
 #include "SphereTests.hpp"
 #include "SamplerTests.hpp"
 #include "TriangleTests.hpp"
+#include "SquarePixelSamplingStrategyTests.hpp"
 #include "geometry/Surface.hpp"
 
 int main(int argc, char** argv)
