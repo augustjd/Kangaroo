@@ -29,6 +29,8 @@ target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 set(${SFML_LIBRARIES} -lsfml-graphics -lsfml-window -lsfml-system)
 
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
+
+file(GLOB SOURCES src/*.cpp)
  
 # Link runTests with what we want to test and the GTest and pthread library
 target_link_libraries(${EXECUTABLE_NAME} ${GTEST_LIBRARIES} pthread)
