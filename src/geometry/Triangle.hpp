@@ -34,7 +34,7 @@ public:
       return Intersection::None();
     }
 
-    return Intersection(plane_intersection, *this);
+    return Intersection(distance, plane_intersection, *this);
   };
 
   const Vector3d& ab() const { return _ab; };
@@ -45,16 +45,17 @@ public:
 
   double area() const { return _area; };
 
+protected:
+  virtual std::ostream& print(std::ostream& out) const {
+  return out << BOLD_BLUE("Triangle") "("
+    << BOLD_GREEN("a") "=" << _a << ", "
+    << BOLD_GREEN("b") "=" << _b << ", "
+    << BOLD_GREEN("c") "=" << _c << ")";
+  }
+
 private:
   Vector3d _a, _b, _c, _ab, _bc, _ac, _normal;
   double _area;
 };
-
-std::ostream& operator<< (std::ostream& out, const Triangle& obj) {
-  return out << BOLD_BLUE("Triangle") "("
-    << BOLD_GREEN("a") "=" << obj._a << ", "
-    << BOLD_GREEN("b") "=" << obj._b << ", "
-    << BOLD_GREEN("c") "=" << obj._c << ")";
-}
 
 #endif /* end of include guard: __TRIANGLE_H__ */

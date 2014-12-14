@@ -3,7 +3,10 @@
 
 #include <typeinfo>
 #include <Eigen/Dense>
+#include <limits>
 #include "Formatting.hpp"
+#include "Ray.hpp"
+ 
 
 using namespace Eigen;
 using namespace std;
@@ -14,31 +17,36 @@ class Intersection {
   friend ostream& operator<<(ostream& out, const Intersection& i);
 
 public:
-  Intersection(const Vector3d& location, const Surface& surface) : _location(location), _surface(&surface), _none(false) {};
+  Intersection(double distance, const Vector3d& location, const Surface& surface) : 
+      _location(location), _surface(&surface), _distance(distance), _none(false) 
+    {};
 
-  static Intersection None() { return Intersection(); };
+  static Intersection None() { return Intersection(true); };
+  static Intersection Some() { return Intersection(false); };
 
   const Surface& surface() { return *_surface; };
   const Vector3d& location() { return _location; };
+  double distance() { return _distance; };
 
   bool isNone() const { return _none; };
-private:
-  Intersection() : _surface(NULL), _location(), _none(true) {};
+  bool isSome() const { return _distance == std::numeric_limits<double>::infinity(); };
 
-  const Vector3d _location;
+  bool operator< (const Intersection& other) const {
+      return _distance < other._distance;
+  };
+
+private:
+  Intersection(bool result) : 
+      _location(), _surface(NULL), _distance(std::numeric_limits<double>::infinity()), _none(result)
+    {};
+
+  Vector3d _location;
   const Surface* _surface;
-  const bool _none;
+  double _distance;
+  bool _none;
 };
 
-ostream& operator<< (ostream& out, const Intersection& obj) {
-  if (obj.isNone()) {
-    return out << BOLD_BLUE("Intersection")"(none)";
-  } else {
-    return out << BOLD_BLUE("Intersection") << "("
-      << BOLD_GREEN("location") << "=" << obj._location << ", "
-      << BOLD_GREEN("surface") << "=" << typeid(*obj._surface).name() << ")";
-  }
-}
+ostream& operator<< (ostream& out, const Intersection& obj);
 
 #include "Surface.hpp"
 

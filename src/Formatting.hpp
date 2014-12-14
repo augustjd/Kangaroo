@@ -4,6 +4,9 @@
 #include <cstdio>
 #include <iostream>
 #include <typeinfo>
+#include <memory>
+#include <vector>
+
 #include <Eigen/Dense>
 #include <SFML/Graphics.hpp>
 
@@ -13,28 +16,26 @@ using namespace Eigen;
 #ifdef NOCOLOR
   #define BOLD_GREEN(x) x
   #define BOLD_BLUE(x)  x
+  #define BOLD_RED(x)   x
+  #define RED(x)        x
 #else
-  #define BOLD_GREEN(x) "\033[1;32m" << (x) << "\033[0m"
-  #define BOLD_BLUE(x)  "\033[1;34m" << (x) << "\033[0m"
+  #define BOLD_GREEN(x) "\033[1;32m" << x << "\033[0m"
+  #define BOLD_BLUE(x)  "\033[1;34m" << x << "\033[0m"
+  #define BOLD_RED(x)   "\033[1;31m" << x << "\033[0m"
+  #define RED(x)        "\033[31m" << x << "\033[0m"
 #endif
 
-ostream& operator<<(ostream& out, const Vector3d& obj) {
-  char buffer[100];
-  sprintf(buffer, "<%.2f, %.2f, %.2f>", obj[0], obj[1], obj[2]);
-  return out << buffer;
-}
+#define FATAL(msg) do { std::cerr << BOLD_RED("FATAL ERROR(") << RED(__FILENAME__ " in " << &*__FUNCTION__) << BOLD_RED("): ") << msg << std::endl; exit(1); } while (0)
 
-ostream& operator<<(ostream& out, const Vector2d& obj) {
-  char buffer[100];
-  sprintf(buffer, "<%.2f, %.2f>", obj[0], obj[1]);
-  return out << buffer;
-}
+string vector_to_str(const Vector3d& obj);
+string vector_to_str(const Vector2d& obj);
 
-ostream& operator<<(ostream& out, const sf::Color& obj) {
-    return out << BOLD_BLUE("Color")"("
-        << BOLD_GREEN("r")"=" << (int)obj.r << ", "
-        << BOLD_GREEN("g")"=" << (int)obj.g << ", "
-        << BOLD_GREEN("b")"=" << (int)obj.b << ")";
-}
+ostream& operator<<(ostream& out, const sf::Color& obj);
+
+template <typename T>
+ostream& operator<<(ostream& out, const vector<T>& obj);
+
+template <typename T>
+ostream& operator<<(ostream& out, const vector<unique_ptr<T>>& obj);
 
 #endif /* end of include guard: __FORMATTING_H__ */

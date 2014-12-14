@@ -11,6 +11,8 @@ set(TEST_EXECUTABLE_NAME "${EXECUTABLE_NAME}_tests")
 set(CMAKE_BUILD_TYPE Debug)
 add_executable(${EXECUTABLE_NAME} src/main.cpp ${all_src})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+
 add_definitions(
 	-std=c++1y
 	)
@@ -29,10 +31,6 @@ include_directories (${EIGEN3_INCLUDE_DIR})
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(SFML 1.6 REQUIRED system window graphics network audio)
-target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
-
-set(${SFML_LIBRARIES} -lsfml-graphics -lsfml-window -lsfml-system)
-
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES})
 
 file(GLOB SOURCES src/*.cpp)

@@ -26,22 +26,22 @@ public:
 
       double first_intersection_distance = min(d1, d2);
 
-      return Intersection(ray.along(first_intersection_distance), *this);
+      return Intersection(first_intersection_distance, ray.along(first_intersection_distance), *this);
     }
   };
 
-
   const Vector3d& center() const { return _center; };
   const double radius() const { return _radius; };
+
+protected:
+  virtual std::ostream& print(std::ostream& out) const {
+      return out << BOLD_BLUE("Sphere")"("
+        << BOLD_GREEN("r") "=" << radius() << ", "
+        << BOLD_GREEN("center") "=" << vector_to_str(center()) << ")";
+  }
 private:
   Vector3d _center;
   double _radius;
 };
-
-std::ostream& operator<< (std::ostream& out, const Sphere& obj) {
-  return out << BOLD_BLUE("Sphere")"("
-    << BOLD_GREEN("r") "=" << obj.radius() << ", "
-    << BOLD_GREEN("center") "=" << obj.center() << ")";
-}
 
 #endif /* end of include guard: __SPHERE_H__ */

@@ -1,10 +1,13 @@
 #include <gtest/gtest.h>
 
-#include "geometry/Triangle.hpp"
-#include "geometry/Ray.hpp"
+#include "../src/geometry/Triangle.hpp"
+#include "../src/geometry/Ray.hpp"
+#include <Eigen/Dense>
 
 #include <iostream>
+
 using namespace std;
+using namespace Eigen;
 
 #define TriangleTest(name) TEST(TriangleTest, name)
 

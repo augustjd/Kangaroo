@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "Constants.hpp"
-#include "geometry/Geometry.hpp"
+#include "../Constants.hpp"
+#include "../geometry/Geometry.hpp"
  
 
 class Sampler {
@@ -58,8 +58,5 @@ private:
   unsigned short xsubi[3];
 };
 
-std::ostream& operator<< (std::ostream& out, Sampler obj) {
-  return out << "Sampler(seed=" << obj.seed() << ")";
-}
-
+std::ostream& operator<< (std::ostream& out, Sampler obj);
 #endif /* end of include guard: __SAMPLER_H__ */

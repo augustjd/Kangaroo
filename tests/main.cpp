@@ -5,7 +5,7 @@
 #include "SamplerTests.hpp"
 #include "TriangleTests.hpp"
 #include "SquarePixelSamplingStrategyTests.hpp"
-#include "geometry/Surface.hpp"
+#include "SceneLoaderTests.hpp"
 
 int main(int argc, char** argv)
 {
