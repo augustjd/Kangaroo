@@ -38,4 +38,6 @@ ostream& operator<<(ostream& out, const vector<T>& obj);
 template <typename T>
 ostream& operator<<(ostream& out, const vector<unique_ptr<T>>& obj);
 
+
+#define DEBUG_PRINT(expr) cout << #expr << ": " << (expr) << endl;
 #endif /* end of include guard: __FORMATTING_H__ */
