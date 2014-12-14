@@ -1,4 +1,4 @@
-BUILD=./build/
+BUILD=./build
 MAIN=kangaroo
 TEST_MAIN=kangaroo_tests
 SCENE=./cbox.xml
