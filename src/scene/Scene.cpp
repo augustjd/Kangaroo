@@ -5,7 +5,7 @@ Intersection Scene::closest_intersection(const Ray& ray) const {
     Intersection closest = Intersection::None();
 
     for (auto& obj : _objects) {
-        Intersection i = obj->surface->intersect(ray);
+        Intersection i = obj->intersect(ray);
         if (i < closest) {
             closest = i;
         }

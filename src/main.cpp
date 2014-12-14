@@ -45,8 +45,7 @@ int main(int argc, const char** argv)
     sf::Image image;
     image.create(render_width, render_height, sf::Color(255,0,0));
 
-    double focal_length = max(render_width, render_height);
-    Camera cam(image, focal_length, *scene.get());
+    Camera cam(image, 90, *scene.get());
     Display display(image);
 
     thread cam_thread([&] { cam.sample(); });

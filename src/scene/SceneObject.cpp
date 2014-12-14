@@ -7,3 +7,7 @@ SceneObject::SceneObject(Surface* _surface, Material* _material) :
 SceneObject::SceneObject(unique_ptr<Surface>& _surface, shared_ptr<Material>& _material) : 
     surface(std::move(_surface)), material(std::move(_material)) 
 {};
+
+Intersection SceneObject::intersect(const Ray& ray) { 
+    return surface->intersect(ray).set_object(*this);
+};

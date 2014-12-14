@@ -14,6 +14,7 @@
 #include "xml/tinyxml2.hpp"
 #include "/home/august/Homework/acg/final_project/src/xml/tinyxml2.hpp"
 #include "/home/august/Homework/acg/final_project/src/geometry/Sphere.hpp"
+#include "/home/august/Homework/acg/final_project/src/geometry/Triangle.hpp"
 #include "/home/august/Homework/acg/final_project/src/material/Material.hpp"
 #include "/home/august/Homework/acg/final_project/src/material/LambertianMaterial.hpp"
 
@@ -31,7 +32,17 @@ struct MaterialLoader {
     virtual Material* load(const XMLElement* el) = 0;
 };
 
+struct LambertianMaterialLoader : MaterialLoader{
+    virtual Material* load(const XMLElement* el) {
+        double emit = 0.0;
+        if (el->FirstChildElement("emit")) {
+            el->FirstChildElement("emit")->QueryDoubleText(&emit);
+        }
+    }
+};
+
 static std::map<string, MaterialLoader*> material_loaders = {
+    { "material", new LambertianMaterialLoader() },
 };
 
 struct SceneObjectLoader {
@@ -41,7 +52,7 @@ struct SceneObjectLoader {
         if (material_node == NULL) {
             material = new LambertianMaterial();
         } else {
-            material_loaders.find(material_node->Name())->second->load(material_node); 
+            material_loaders.find(material_node->FirstChildElement("type")->Value())->second->load(material_node); 
         }
 
         return new SceneObject(static_cast<Surface*>(load_surface(el)), material);
@@ -68,8 +79,8 @@ struct TriangleLoader : SceneObjectLoader {
 };
 
 static std::map<string, SceneObjectLoader*> object_loaders = {
-    { string("sphere"), static_cast<SceneObjectLoader*>(new SphereLoader()) },
-    { string("triangle"), static_cast<SceneObjectLoader*>(new TriangleLoader()) },
+    { "sphere", static_cast<SceneObjectLoader*>(new SphereLoader()) },
+    { "triangle", static_cast<SceneObjectLoader*>(new TriangleLoader()) },
 };
 
 
@@ -79,7 +90,7 @@ bool contains(std::map<K,V> m, K key) {
 }
 
 unique_ptr<Scene> SceneLoader::load_from_string(const char* s) {
-    unique_ptr<Scene> result = unique_ptr<Scene>(new Scene());
+    vector<SceneObject*> objects;
     XMLDocument doc;
     doc.Parse(s);
     if (doc.ErrorID() != 0) {
@@ -93,12 +104,12 @@ unique_ptr<Scene> SceneLoader::load_from_string(const char* s) {
          node = node->NextSiblingElement()) {
         string tag(node->Name());
         if (contains(object_loaders, tag)) {
-            result->_objects.emplace_back(object_loaders.find(tag)->second->load(node));
+            objects.push_back(object_loaders.find(tag)->second->load(node));
         }
 
     }
 
-    return result;
+    return unique_ptr<Scene>(new Scene(objects));
 }
 
 unique_ptr<Scene> SceneLoader::load_from_string(const string& s) {

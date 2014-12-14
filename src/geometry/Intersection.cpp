@@ -6,6 +6,6 @@ ostream& operator<< (ostream& out, const Intersection& obj) {
   } else {
     return out << BOLD_BLUE("Intersection") << "("
       << BOLD_GREEN("location") << "=" << vector_to_str(obj._location) << ", "
-      << BOLD_GREEN("surface") << "=" << *obj._surface << ")";
+      << BOLD_GREEN("object") << "=" << *obj._object << ")";
   }
 }
