@@ -57,4 +57,14 @@ TriangleTest(IntersectionIsCorrectlyHit) {
   ASSERT_FALSE(i2.isNone());
   ASSERT_EQ(&i2.surface(), &t);
   ASSERT_EQ(i2.location(), Vector3d(0.1,0,1.0));
+
+  cout << endl << endl;
+  const Triangle t2(Vector3d(150.0, 10, 330.0), Vector3d(10, 150, 330.0), Vector3d(0, 0, 330.0));
+  Ray hit3(Vector3d(0,0,1.0));
+  Intersection i3 = t2.intersect(hit3);
+
+  cout << i3 << endl;
+  ASSERT_FALSE(i3.isNone());
+  ASSERT_EQ(&i3.surface(), &t2);
+  ASSERT_EQ(i3.location(), Vector3d(0.0, 0.0, 330.0));
 }
