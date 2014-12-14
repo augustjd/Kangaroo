@@ -1,18 +1,20 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
+#include <thread>
 #include <iostream>
 #include <Eigen/Dense>
 
 #include "camera/Camera.hpp"
+#include "camera/Display.hpp"
 #include "scene/SceneLoader.hpp"
 #include "camera/SquarePixelSamplingStrategy.hpp"
 
 using namespace std;
 using namespace Eigen;
 
-static const size_t DEFAULT_RENDER_WIDTH = 200;
-static const size_t DEFAULT_RENDER_HEIGHT = 100;
+static const size_t DEFAULT_RENDER_WIDTH = 800;
+static const size_t DEFAULT_RENDER_HEIGHT = 600;
 
 int main(int argc, const char** argv)
 {
@@ -34,6 +36,7 @@ int main(int argc, const char** argv)
     }
 
     unique_ptr<Scene> scene = SceneLoader::load_from_file(scene_file);
+    cout << *scene.get() << endl;
 
     sf::RenderWindow window(sf::VideoMode(render_width, render_height), "Kangaroo");
 
@@ -42,10 +45,11 @@ int main(int argc, const char** argv)
     sf::Image image;
     image.create(render_width, render_height, sf::Color(255,0,0));
 
-    double focal_length = 5.0;
-    auto pixel_sampling_strategy = make_shared<SquarePixelSamplingStrategy>(render_width, render_height);
-    double ratio = ((double)render_width) / render_height;
-    Camera cam(ratio, 1.0, Vector2d(render_width, render_height), focal_length, image, pixel_sampling_strategy, *scene.get());
+    double focal_length = max(render_width, render_height);
+    Camera cam(image, focal_length, *scene.get());
+    Display display(image);
+
+    thread cam_thread([&] { cam.sample(); });
     while (window.isOpen())
     {
         sf::Event event;
@@ -63,11 +67,12 @@ int main(int argc, const char** argv)
         }
 
         window.clear();
-        window.draw(cam.sprite());
+        window.draw(display.sprite());
         window.display();
 
-        cam.make_sample();
+        display.update();
     }
+    cam_thread.join();
 
     return 0;
 }

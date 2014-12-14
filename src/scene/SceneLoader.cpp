@@ -6,6 +6,7 @@
 #include "SceneObject.hpp"
 #include "Formatting.hpp"
 #include "geometry/Sphere.hpp"
+#include "geometry/Triangle.hpp"
 
 #include "material/Material.hpp"
 #include "material/LambertianMaterial.hpp"
@@ -34,14 +35,6 @@ static std::map<string, MaterialLoader*> material_loaders = {
 };
 
 struct SceneObjectLoader {
-    virtual SceneObject* load(const XMLElement* el) = 0;
-};
-
-struct SphereLoader : SceneObjectLoader {
-    Sphere* load_surface(const XMLElement* el) {
-        return new Sphere(load_vector(el->FirstChildElement("position")), el->DoubleAttribute("r"));
-    }
-
     SceneObject* load(const XMLElement* el) { 
         Material* material;
         const XMLElement* material_node = el->FirstChildElement("material");
@@ -53,10 +46,30 @@ struct SphereLoader : SceneObjectLoader {
 
         return new SceneObject(static_cast<Surface*>(load_surface(el)), material);
     }
+    virtual Surface* load_surface(const XMLElement* el) = 0;
+};
+
+struct SphereLoader : SceneObjectLoader {
+    Sphere* load_surface(const XMLElement* el) {
+        return new Sphere(load_vector(el->FirstChildElement("position")), el->DoubleAttribute("r"));
+    }
+};
+
+struct TriangleLoader : SceneObjectLoader {
+    Triangle* load_surface(const XMLElement* el) {
+        const XMLElement* point_iterator = el->FirstChildElement("point");
+
+        Vector3d v1 = load_vector(point_iterator);
+        Vector3d v2 = load_vector(point_iterator->NextSiblingElement());
+        Vector3d v3 = load_vector(point_iterator->NextSiblingElement()->NextSiblingElement());
+
+        return new Triangle(v1, v2, v3);
+    }
 };
 
 static std::map<string, SceneObjectLoader*> object_loaders = {
-    { string("sphere"), static_cast<SceneObjectLoader*>(new SphereLoader()) }
+    { string("sphere"), static_cast<SceneObjectLoader*>(new SphereLoader()) },
+    { string("triangle"), static_cast<SceneObjectLoader*>(new TriangleLoader()) },
 };
 
 
