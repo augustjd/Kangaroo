@@ -11,3 +11,7 @@ SceneObject::SceneObject(unique_ptr<Surface>& _surface, shared_ptr<Material>& _m
 Intersection SceneObject::intersect(const Ray& ray) { 
     return surface->intersect(ray).set_object(*this);
 };
+
+ImportanceRay SceneObject::next(const Ray& incoming, const Intersection& intersection, const Sampler& sampler) const {
+    return material->next(incoming, intersection.normal(), sampler);
+}

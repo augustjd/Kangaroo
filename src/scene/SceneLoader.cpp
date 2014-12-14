@@ -34,9 +34,7 @@ struct MaterialLoader {
 
 struct LambertianMaterialLoader : MaterialLoader{
     virtual Material* load(const XMLElement* el) {
-        double emit = 0.0;
         if (el->FirstChildElement("emit")) {
-            el->FirstChildElement("emit")->QueryDoubleText(&emit);
         }
     }
 };
