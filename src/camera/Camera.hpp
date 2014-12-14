@@ -46,7 +46,7 @@ public:
         }
     }
 private:
-    sf::Color hit_sample(ImportanceRay ray) {
+    sf::Color sample(ImportanceRay ray) {
         Intersection i = _scene.closest_intersection(ray);
 
         if (i.isNone()) {
