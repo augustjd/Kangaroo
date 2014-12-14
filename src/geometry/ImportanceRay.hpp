@@ -7,6 +7,10 @@ class ImportanceRay : public Ray {
 public:
     ImportanceRay(Vector3d origin, Vector3d direction, double _importance) : 
         Ray(origin, direction), importance(_importance) {};
+
+    ImportanceRay(Vector3d direction, double _importance) : 
+        Ray(direction), importance(_importance) {};
+
     virtual ~ImportanceRay(){};
 
     const double importance;

@@ -18,7 +18,7 @@ public:
   virtual ~Triangle() {};
 
   virtual Intersection intersect(const Ray& ray) const {
-    const Vector3d& n = normal();
+    const Vector3d& n = _normal;
 
     double distance = n.dot(_a - ray.origin()) / n.dot(ray.direction());
     if (distance < 0.0) {
@@ -26,11 +26,20 @@ public:
     }
 
     Vector3d plane_intersection = ray.along(distance);
-    Vector3d plane_intersection_offset = plane_intersection - _a;
-    double u = plane_intersection_offset.dot(_ab);
-    double v = (plane_intersection_offset - _ab * u).dot(_ac);
+    Vector3d w = plane_intersection - _a;
+    double uv = _ab.dot(_ac); 
 
-    if (u < 0.0 || v < 0.0 || u + v > 1.0) {
+    double wv = w.dot(_ac);
+    double wu = w.dot(_ab);
+
+    double uu = _ab.dot(_ab);
+    double vv = _ac.dot(_ac);
+    double denom = 1 / ((uv*uv) - (uu*vv));
+
+    double s = ((uv*wv) - (vv*wu)) * denom;
+    double t = ((uv*wu) - (uu*wv)) * denom;
+
+    if (s < 0.0 || t < 0.0 || s + t > 1.0) {
       return Intersection::None();
     }
 
@@ -48,9 +57,9 @@ public:
 protected:
   virtual std::ostream& print(std::ostream& out) const {
   return out << BOLD_BLUE("Triangle") "("
-    << BOLD_GREEN("a") "=" << _a << ", "
-    << BOLD_GREEN("b") "=" << _b << ", "
-    << BOLD_GREEN("c") "=" << _c << ")";
+    << BOLD_GREEN("a") "=" << vector_to_str(_a) << ", "
+    << BOLD_GREEN("b") "=" << vector_to_str(_b) << ", "
+    << BOLD_GREEN("c") "=" << vector_to_str(_c) << ")";
   }
 
 private:
