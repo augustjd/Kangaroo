@@ -12,6 +12,6 @@ Intersection SceneObject::intersect(const Ray& ray) {
     return surface->intersect(ray).set_object(*this);
 };
 
-ImportanceRay SceneObject::next(const Ray& incoming, const Intersection& intersection, Sampler& sampler) const {
+ImportanceRay SceneObject::next(const ImportanceRay& incoming, const Intersection& intersection, Sampler& sampler) const {
     return material->next(incoming, intersection.location(), intersection.normal(), sampler);
 }

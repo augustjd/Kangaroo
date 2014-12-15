@@ -14,7 +14,7 @@ using namespace std;
 using namespace Eigen;
 
 static const size_t DEFAULT_RENDER_WIDTH = 800;
-static const size_t DEFAULT_RENDER_HEIGHT = 600;
+static const size_t DEFAULT_RENDER_HEIGHT = 400;
 
 int main(int argc, const char** argv)
 {
@@ -45,7 +45,7 @@ int main(int argc, const char** argv)
     sf::Image image;
     image.create(render_width, render_height, sf::Color(255,0,0));
 
-    Camera cam(image, 35, *scene.get());
+    Camera cam(image, 45, *scene.get());
     Display display(image);
 
     thread cam_thread([&] { cam.sample(); });

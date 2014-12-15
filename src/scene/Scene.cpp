@@ -23,6 +23,7 @@ ostream& operator<<(ostream& out, const Scene& obj) {
         if (!first) {
             out << ", ";
         }
+        out << endl;
         out << (SceneObject&)*it;
         first = false;
     }

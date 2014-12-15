@@ -12,6 +12,7 @@
 #include "material/Material.hpp"
 #include "material/LambertianMaterial.hpp"
 #include "material/SpecularMaterial.hpp"
+#include "material/TransparentSpecularMaterial.hpp"
  
 #include "xml/tinyxml2.hpp"
 
@@ -35,7 +36,34 @@ struct MaterialLoader {
     virtual Material* load(const XMLElement* el) = 0;
 };
 
-struct SpecularMaterialLoader : MaterialLoader{
+struct TransparentSpecularMaterialLoader : MaterialLoader {
+    virtual Material* load(const XMLElement* el) {
+        const XMLElement* color_node = el->FirstChildElement("color");
+        const XMLElement* emit_node = el->FirstChildElement("emit");
+        const XMLElement* opacity_node = el->FirstChildElement("opacity");
+        Color color;
+        Color emit;
+        double opacity = 1.0;
+        if (opacity_node != NULL) {
+            opacity_node->QueryDoubleText(&opacity);
+        }
+        if (color_node != NULL) {
+            color = load_color(color_node);
+        } else {
+            color = Color(1.0);
+        }
+
+        if (emit_node != NULL) {
+            emit = load_color(emit_node);
+        } else {
+            emit = Color(0);
+        }
+
+        return new TransparentSpecularMaterial(color, emit, opacity);
+    }
+};
+
+struct SpecularMaterialLoader : MaterialLoader {
     virtual Material* load(const XMLElement* el) {
         const XMLElement* color_node = el->FirstChildElement("color");
         const XMLElement* emit_node = el->FirstChildElement("emit");
@@ -45,13 +73,13 @@ struct SpecularMaterialLoader : MaterialLoader{
         if (color_node != NULL) {
             color = load_color(color_node);
         } else {
-            color = Color(0.5);
+            color = Color(1.0);
         }
 
         if (emit_node != NULL) {
             emit = load_color(emit_node);
         } else {
-            emit = Color(0.5);
+            emit = Color(0);
         }
 
         return new SpecularMaterial(color, emit);
@@ -68,13 +96,13 @@ struct LambertianMaterialLoader : MaterialLoader{
         if (color_node != NULL) {
             color = load_color(color_node);
         } else {
-            color = Color(0.5);
+            color = Color(1.0);
         }
 
         if (emit_node != NULL) {
             emit = load_color(emit_node);
         } else {
-            emit = Color(0.5);
+            emit = Color(0);
         }
 
         return new LambertianMaterial(color, emit);
@@ -84,6 +112,7 @@ struct LambertianMaterialLoader : MaterialLoader{
 static std::map<string, MaterialLoader*> material_loaders = {
     { "Lambertian", new LambertianMaterialLoader() },
     { "Specular", new SpecularMaterialLoader() },
+    { "TransparentSpecular", new TransparentSpecularMaterialLoader() },
 };
 
 struct SceneObjectLoader {
