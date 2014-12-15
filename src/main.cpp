@@ -45,7 +45,7 @@ int main(int argc, const char** argv)
     sf::Image image;
     image.create(render_width, render_height, sf::Color(255,0,0));
 
-    Camera cam(image, 90, *scene.get());
+    Camera cam(image, 35, *scene.get());
     Display display(image);
 
     thread cam_thread([&] { cam.sample(); });
@@ -71,7 +71,7 @@ int main(int argc, const char** argv)
 
         display.update();
     }
-    cam_thread.join();
+    //cam_thread.join();
 
     return 0;
 }

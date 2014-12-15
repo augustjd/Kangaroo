@@ -3,6 +3,7 @@
 #include "RayTests.hpp"
 #include "SphereTests.hpp"
 #include "SamplerTests.hpp"
+#include "SampleTests.hpp"
 #include "TriangleTests.hpp"
 #include "SquarePixelSamplingStrategyTests.hpp"
 #include "SceneLoaderTests.hpp"

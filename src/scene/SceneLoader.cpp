@@ -7,16 +7,13 @@
 #include "Formatting.hpp"
 #include "geometry/Sphere.hpp"
 #include "geometry/Triangle.hpp"
+#include "color/Color.hpp"
 
 #include "material/Material.hpp"
 #include "material/LambertianMaterial.hpp"
+#include "material/SpecularMaterial.hpp"
  
 #include "xml/tinyxml2.hpp"
-#include "/home/august/Homework/acg/final_project/src/xml/tinyxml2.hpp"
-#include "/home/august/Homework/acg/final_project/src/geometry/Sphere.hpp"
-#include "/home/august/Homework/acg/final_project/src/geometry/Triangle.hpp"
-#include "/home/august/Homework/acg/final_project/src/material/Material.hpp"
-#include "/home/august/Homework/acg/final_project/src/material/LambertianMaterial.hpp"
 
 using namespace std;
 using namespace tinyxml2;
@@ -28,19 +25,65 @@ static Vector3d load_vector(const XMLElement* el) {
                     el->DoubleAttribute("z"));
 }
 
+static Color load_color(const XMLElement* el) {
+    return Color(el->DoubleAttribute("r"),
+                 el->DoubleAttribute("g"),
+                 el->DoubleAttribute("b"));
+}
+
 struct MaterialLoader {
     virtual Material* load(const XMLElement* el) = 0;
 };
 
+struct SpecularMaterialLoader : MaterialLoader{
+    virtual Material* load(const XMLElement* el) {
+        const XMLElement* color_node = el->FirstChildElement("color");
+        const XMLElement* emit_node = el->FirstChildElement("emit");
+
+        Color color;
+        Color emit;
+        if (color_node != NULL) {
+            color = load_color(color_node);
+        } else {
+            color = Color(0.5);
+        }
+
+        if (emit_node != NULL) {
+            emit = load_color(emit_node);
+        } else {
+            emit = Color(0.5);
+        }
+
+        return new SpecularMaterial(color, emit);
+    }
+};
+
 struct LambertianMaterialLoader : MaterialLoader{
     virtual Material* load(const XMLElement* el) {
-        if (el->FirstChildElement("emit")) {
+        const XMLElement* color_node = el->FirstChildElement("color");
+        const XMLElement* emit_node = el->FirstChildElement("emit");
+
+        Color color;
+        Color emit;
+        if (color_node != NULL) {
+            color = load_color(color_node);
+        } else {
+            color = Color(0.5);
         }
+
+        if (emit_node != NULL) {
+            emit = load_color(emit_node);
+        } else {
+            emit = Color(0.5);
+        }
+
+        return new LambertianMaterial(color, emit);
     }
 };
 
 static std::map<string, MaterialLoader*> material_loaders = {
-    { "material", new LambertianMaterialLoader() },
+    { "Lambertian", new LambertianMaterialLoader() },
+    { "Specular", new SpecularMaterialLoader() },
 };
 
 struct SceneObjectLoader {
@@ -50,7 +93,16 @@ struct SceneObjectLoader {
         if (material_node == NULL) {
             material = new LambertianMaterial();
         } else {
-            material_loaders.find(material_node->FirstChildElement("type")->Value())->second->load(material_node); 
+            string material_name(material_node->FirstChildElement("type")->GetText());
+
+            auto match = material_loaders.find(material_name);
+            if (match == material_loaders.end()) {
+                cout << "No material with name " << BOLD_GREEN(material_name) << " found." << endl;
+                material = new LambertianMaterial();
+            } else {
+                cout << "Loading " << BOLD_GREEN(material_name) << "..." << endl;
+                material = match->second->load(material_node); 
+            }
         }
 
         return new SceneObject(static_cast<Surface*>(load_surface(el)), material);
