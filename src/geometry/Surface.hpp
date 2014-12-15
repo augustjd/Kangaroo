@@ -18,6 +18,5 @@ protected:
     virtual std::ostream& print(std::ostream&) const = 0;
 };
 
-#include "Intersection.hpp"
 
 #endif /* end of include guard: __SURFACE_H__ */

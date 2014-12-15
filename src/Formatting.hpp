@@ -17,11 +17,15 @@ using namespace Eigen;
   #define BOLD_GREEN(x) x
   #define BOLD_BLUE(x)  x
   #define BOLD_RED(x)   x
+  #define GREEN(x)      x
+  #define BLUE(x)       x
   #define RED(x)        x
 #else
   #define BOLD_GREEN(x) "\033[1;32m" << x << "\033[0m"
   #define BOLD_BLUE(x)  "\033[1;34m" << x << "\033[0m"
   #define BOLD_RED(x)   "\033[1;31m" << x << "\033[0m"
+  #define GREEN(x)      "\033[32m" << x << "\033[0m"
+  #define BLUE(x)       "\033[34m" << x << "\033[0m"
   #define RED(x)        "\033[31m" << x << "\033[0m"
 #endif
 

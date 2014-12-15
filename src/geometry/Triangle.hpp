@@ -2,6 +2,7 @@
 #define __TRIANGLE_H__
 
 #include "Surface.hpp"
+#include "Intersection.hpp"
 #include "Formatting.hpp"
 
 using namespace std;
@@ -43,7 +44,7 @@ public:
       return Intersection::None();
     }
 
-    return Intersection(distance, plane_intersection, *this);
+    return Intersection(distance, plane_intersection, n);
   };
 
   const Vector3d& ab() const { return _ab; };

@@ -4,28 +4,34 @@
 #include <typeinfo>
 #include <Eigen/Dense>
 #include <limits>
+
 #include "Formatting.hpp"
-#include "Ray.hpp"
- 
+#include "geometry/Ray.hpp"
 
 using namespace Eigen;
 using namespace std;
 
-
-class Surface;
+class SceneObject;
 class Intersection {
   friend ostream& operator<<(ostream& out, const Intersection& i);
 
 public:
-  Intersection(double distance, const Vector3d& location, const Surface& surface) : 
-      _location(location), _surface(&surface), _distance(distance), _none(false) 
+  Intersection(double distance, const Vector3d& location, const Vector3d& normal) : 
+      _location(location), _normal(normal), _object(NULL), _distance(distance), _none(false) 
+    {};
+
+  Intersection(double distance, const Vector3d& location, const Vector3d& normal, SceneObject& object) : 
+      _location(location), _normal(normal), _object(&object), _distance(distance), _none(false) 
     {};
 
   static Intersection None() { return Intersection(true); };
   static Intersection Some() { return Intersection(false); };
 
-  const Surface& surface() { return *_surface; };
-  const Vector3d& location() { return _location; };
+  bool has_object() { return _object != NULL; };
+  const SceneObject& object() const { return *_object; };
+  Intersection& set_object(SceneObject& obj) { _object = &obj; return *this; };
+  const Vector3d& location() const { return _location; };
+  const Vector3d& normal() const { return _normal; };
   double distance() { return _distance; };
 
   bool isNone() const { return _none; };
@@ -37,17 +43,18 @@ public:
 
 private:
   Intersection(bool result) : 
-      _location(), _surface(NULL), _distance(std::numeric_limits<double>::infinity()), _none(result)
+      _location(), _object(NULL), _distance(std::numeric_limits<double>::infinity()), _none(result)
     {};
 
   Vector3d _location;
-  const Surface* _surface;
+  Vector3d _normal;
+  SceneObject* _object;
   double _distance;
   bool _none;
 };
 
 ostream& operator<< (ostream& out, const Intersection& obj);
 
-#include "Surface.hpp"
+#include "scene/SceneObject.hpp"
 
 #endif /* end of include guard: __INTERSECTION_H__ */

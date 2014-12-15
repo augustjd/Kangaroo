@@ -16,14 +16,18 @@ public:
         Vector3d v = a.cross(b);
 
         Matrix3d skew;
-        skew << 0, -v[3], v[2],
-                v[3], 0, -v[1],
-                -v[2], v[1], 0;
+        skew << 0, -v[2], v[1],
+                v[2], 0, -v[0],
+                -v[1], v[0], 0;
 
         double c = a.dot(b);
         double s = v.norm();
 
         return Matrix3d::Identity() + skew + (skew * skew * (1 - c / (s*s)));
+    }
+    static Vector3d flip_vector_about(Vector3d x, Vector3d about) {
+        Matrix3d align = align_vectors_matrix(x, about);
+        return align * align * x;
     }
 };
 

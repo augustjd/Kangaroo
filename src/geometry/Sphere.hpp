@@ -2,6 +2,7 @@
 #define __SPHERE_H__
 
 #include "Surface.hpp"
+#include "Intersection.hpp"
 #include "Formatting.hpp"
 
 using namespace std;
@@ -26,7 +27,9 @@ public:
 
       double first_intersection_distance = min(d1, d2);
 
-      return Intersection(first_intersection_distance, ray.along(first_intersection_distance), *this);
+      Vector3d position = ray.along(first_intersection_distance);
+      Vector3d normal = (position - _center).normalized();
+      return Intersection(first_intersection_distance, position, normal);
     }
   };
 

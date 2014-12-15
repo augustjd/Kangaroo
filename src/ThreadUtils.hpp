@@ -14,7 +14,7 @@ using std::endl;
 using std::vector;
 
 template <typename T>
-void process_chunks(const vector<T>& v, std::function<void(const T&)> fn, unsigned int threads) {
+void process_chunks(vector<T>& v, std::function<void(T&)> fn, unsigned int threads) {
     vector<std::thread> thread_pool;
 
     size_t chunk_size = v.size() / threads;
