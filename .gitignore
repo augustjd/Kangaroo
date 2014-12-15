@@ -1,3 +1,5 @@
 *.png
 build/*
 CMakeFiles/*
+cmake/
+bin/
