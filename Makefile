@@ -9,7 +9,7 @@ tests: $(BUILD)/$(TEST_MAIN)
 
 .PHONY: run
 run: $(BUILD)/$(MAIN)
-	$(BUILD)/$(MAIN) $(SCENE)
+	$(BUILD)/$(MAIN) 1280 720 $(SCENE) 
 
 $(BUILD)/$(MAIN): $(BUILD) $(BUILD)/CMakeCache.txt CMakeLists.txt
 	make -sC $(BUILD)

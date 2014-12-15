@@ -13,8 +13,12 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp ${all_src})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
 add_definitions(
 	-std=c++1y
+	-O3
 	)
 # Locate GTest
 include_directories (./src/)
@@ -32,8 +36,9 @@ include_directories (${EIGEN3_INCLUDE_DIR})
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(SFML 1.6 REQUIRED system window graphics network audio)
 target_link_libraries(${EXECUTABLE_NAME} ${SFML_LIBRARIES} -lsfml-graphics)
+target_link_libraries(${TEST_EXECUTABLE_NAME} ${SFML_LIBRARIES} -lsfml-graphics)
 
 file(GLOB SOURCES src/*.cpp)
  
 # Link runTests with what we want to test and the GTest and pthread library
-target_link_libraries(${EXECUTABLE_NAME} ${GTEST_MAIN_LIBRARIES} pthread)
+target_link_libraries(${TEST_EXECUTABLE_NAME} ${GTEST_MAIN_LIBRARIES} pthread)
