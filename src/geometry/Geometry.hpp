@@ -29,6 +29,10 @@ public:
         Matrix3d align = align_vectors_matrix(x, about);
         return align * align * x;
     }
+
+    const static Vector3d x_unit;
+    const static Vector3d y_unit;
+    const static Vector3d z_unit;
 };
 
 #endif /* end of include guard: __GEOMETRY_H__ */

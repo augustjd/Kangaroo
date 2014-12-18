@@ -9,11 +9,10 @@
 #include "geometry/Ray.hpp"
 
 using namespace Eigen;
-using namespace std;
 
 class SceneObject;
 class Intersection {
-  friend ostream& operator<<(ostream& out, const Intersection& i);
+  friend std::ostream& operator<<(std::ostream& out, const Intersection& i);
 
 public:
   Intersection(double distance, const Vector3d& location, const Vector3d& normal) : 
@@ -52,8 +51,6 @@ private:
   double _distance;
   bool _none;
 };
-
-ostream& operator<< (ostream& out, const Intersection& obj);
 
 #include "scene/SceneObject.hpp"
 
