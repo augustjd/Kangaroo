@@ -25,12 +25,28 @@ public:
     Camera(sf::Image& image, unsigned int fovx, const Scene& scene) :
         _image(image), 
         _width(image.getSize().x), 
+        _up(0,1,0),
         _height(image.getSize().y), 
         _focal_length(fabs((image.getSize().x / 2.0)/tan(Constants::degrees_to_radians(fovx/2.0)))), 
         _scene(scene),
         _tracer(new DepthPathTracer(sampler, 4))
     {
         _position = Vector3d(0, 0, -_focal_length);
+        _right = _position.cross(_up).normalized();
+        initialize_samples();
+    };
+
+    Camera(Vector3d position, Vector3d up, sf::Image& image, unsigned int fovx, const Scene& scene) :
+        _image(image), 
+        _width(image.getSize().x), 
+        _position(position),
+        _up(up.normalized()),
+        _height(image.getSize().y), 
+        _focal_length(fabs((image.getSize().x / 2.0)/tan(Constants::degrees_to_radians(fovx/2.0)))), 
+        _scene(scene),
+        _tracer(new DepthPathTracer(sampler, 4))
+    {
+        _right = _position.cross(_up).normalized();
         initialize_samples();
     };
 
@@ -41,11 +57,12 @@ public:
     size_t pixels() { return _width * _height; };
 
     Vector3d position_of_pixel(size_t x, size_t y) {
-        return Vector3d(
-                (x - (_width / 2.0)),
-                (y - (_height / 2.0)),
-                0
-                );
+        double x_rel = ((double)x - (double)(_width / 2.0));
+        double y_rel = ((double)y - (double)(_height / 2.0));
+
+        Vector3d result = _position + (_right * x_rel) + (_up * y_rel);
+        result.z() += _focal_length;    
+        return result;
     }
 
     void sample() {
@@ -105,11 +122,13 @@ private:
             size_t x = i % _width;
             size_t y = i / _width;
 
-            rays.emplace_back((position_of_pixel(x, y) - _position).normalized(), 1.0);
+            rays.emplace_back(position_of_pixel(x,y), (position_of_pixel(x, y) - _position).normalized(), 1.0);
             samples.emplace_back(x, y, rays[i]);
         }
     }
     Vector3d _position;
+    Vector3d _up;
+    Vector3d _right;
 
     sf::Image& _image;
     const Scene& _scene;
