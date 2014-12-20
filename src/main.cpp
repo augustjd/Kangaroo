@@ -16,6 +16,12 @@ using namespace Eigen;
 static const size_t DEFAULT_RENDER_WIDTH = 800;
 static const size_t DEFAULT_RENDER_HEIGHT = 400;
 
+struct MouseLocation {
+    Vector2d position;
+};
+
+static MouseLocation* location = NULL;
+
 int main(int argc, const char** argv)
 {
     int render_width, render_height;
@@ -45,10 +51,10 @@ int main(int argc, const char** argv)
     sf::Image image;
     image.create(render_width, render_height, sf::Color(255,0,0));
 
-    Camera cam(image, 45, *scene.get());
+    Camera camera(image, 45, *scene.get());
     Display display(image);
 
-    thread cam_thread([&] { cam.sample(); });
+    thread cam_thread([&] { camera.sample(); });
     while (window.isOpen())
     {
         sf::Event event;
@@ -65,13 +71,51 @@ int main(int argc, const char** argv)
             window.close();
         }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            camera.move(Vector3d(5, 0, 0));
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            camera.move(Vector3d(-5, 0, 0));
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            camera.move(Vector3d(0, 5, 0));
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            camera.move(Vector3d(0, -5, 0));
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LBracket))
+        {
+            camera.move_in(-5);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::RBracket))
+        {
+            camera.move_in(5);
+        }
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            sf::Vector2i _position = sf::Mouse::getPosition();
+            Vector2d position(_position.x, _position.y);
+            if (location == NULL) {
+                location = new MouseLocation { position };
+            }
+        } else {
+            location = NULL;
+        }
+
         window.clear();
         window.draw(display.sprite());
         window.display();
 
         display.update();
     }
-    //cam_thread.join();
+
+    if (camera.done()) {
+        image.saveToFile("out.png");
+    }
 
     return 0;
 }

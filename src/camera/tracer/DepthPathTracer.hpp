@@ -5,6 +5,7 @@
 #include "color/Color.hpp"
 
 #define PERTURBATION 0.001
+#define DO_PERTURBATION
 
 #define MINIMUM_IMPORTANCE 0.001
 class DepthPathTracer : public Tracer {

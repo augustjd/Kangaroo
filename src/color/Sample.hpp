@@ -32,6 +32,8 @@ public:
         return as_sfml_color();
     }
 
+    void reset() { _n = 0; };
+
     size_t x;
     size_t y;
 private:
