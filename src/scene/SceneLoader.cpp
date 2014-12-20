@@ -66,23 +66,15 @@ struct TransparentSpecularMaterialLoader : MaterialLoader {
 struct SpecularMaterialLoader : MaterialLoader {
     virtual Material* load(const XMLElement* el) {
         const XMLElement* color_node = el->FirstChildElement("color");
-        const XMLElement* emit_node = el->FirstChildElement("emit");
 
         Color color;
-        Color emit;
         if (color_node != NULL) {
             color = load_color(color_node);
         } else {
             color = Color(1.0);
         }
 
-        if (emit_node != NULL) {
-            emit = load_color(emit_node);
-        } else {
-            emit = Color(0);
-        }
-
-        return new SpecularMaterial(color, emit);
+        return new SpecularMaterial(color);
     }
 };
 

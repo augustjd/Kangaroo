@@ -29,7 +29,7 @@ public:
                 break;
             }
             color += 
-                (ray.importance * intersection.object().material->emission())
+                (ray.importance * intersection.object().material->emitted(intersection.location()))
                 * fabs(ray.direction().dot(intersection.normal()));
 
             ray = intersection.object().next(ray, intersection, _sampler);   

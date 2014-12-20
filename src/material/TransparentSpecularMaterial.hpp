@@ -5,17 +5,18 @@
 #include "Material.hpp"
 #include "geometry/Geometry.hpp"
  
-class TransparentSpecularMaterial : public Material {
+class TransparentSpecularMaterial : public ConstantColorMaterial {
 public:
-  TransparentSpecularMaterial(Color color, Color emit, double opacity) : _color(color), _emit(emit), _opacity(opacity) {};
-  TransparentSpecularMaterial(Color color, Color emit) : _color(color), _emit(emit), _opacity(1.0) {};
-  TransparentSpecularMaterial() : _color(0.5), _emit(0.0), _opacity(1.0) {};
+  TransparentSpecularMaterial(Color reflected, Color emitted, double opacity) : ConstantColorMaterial(reflected, emitted), _opacity(opacity) {};
+  TransparentSpecularMaterial(Color reflected, Color emitted) : ConstantColorMaterial(reflected, emitted), _opacity(1.0) {};
+  TransparentSpecularMaterial() : ConstantColorMaterial(Color(0.5), Color(0.0)), _opacity(1.0) {};
+
   virtual ~TransparentSpecularMaterial() {};
 
   virtual ImportanceRay next(const ImportanceRay& incoming, const Vector3d& position, const Vector3d& normal, Sampler& sampler) {
       Vector3d direction;
       Vector3d new_position;
-      Color importance = incoming.importance * color();
+      Color importance = incoming.importance * reflected();
       if (sampler.random() > _opacity) {
           double angle = acos(incoming.direction().dot(normal));
 
@@ -31,18 +32,11 @@ public:
       }
       return ImportanceRay(new_position, direction, importance);
   }
-  virtual Color color() const {
-      return _color;
-  }
-  virtual Color emission() const {
-      return _emit;
-  }
-  virtual bool is_emitter() const { return _emit.luminance() > 0; };
 
   virtual std::ostream& print(std::ostream& os) const {
       return os << BOLD_BLUE("TransparentSpecularMaterial") "(" 
-          << BOLD_GREEN("color")"=" << color()
-          << BOLD_GREEN("emission")"=" << emission()
+          << BOLD_GREEN("reflected")"=" << reflected()
+          << BOLD_GREEN("emitted")"=" << emitted()
           << ")";
   }
 private:

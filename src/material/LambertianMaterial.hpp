@@ -6,33 +6,23 @@
 #include "Material.hpp"
 
 static const double DISTANCE_AWAY_FROM_SURFACE = 0.1;
-class LambertianMaterial : public Material {
+class LambertianMaterial : public ConstantColorMaterial {
 public:
-  LambertianMaterial(Color color, Color emit) : _color(color), _emit(emit) {};
-  LambertianMaterial() : _color(0.5), _emit(0.0) {};
+  LambertianMaterial(const Color& reflected, const Color& emitted) : ConstantColorMaterial(reflected, emitted) {};
+  LambertianMaterial() : ConstantColorMaterial(Color(0.5), Color(0.0)) {};
   virtual ~LambertianMaterial() {};
 
   virtual ImportanceRay next(const ImportanceRay& incoming, const Vector3d& position, const Vector3d& normal, Sampler& sampler) {
       Vector3d direction = sampler.random_direction_in_hemisphere(normal);
-      return ImportanceRay(position, direction, incoming.importance * 1.0 / PI);
+      return ImportanceRay(position, direction, incoming.importance * 1.0 / Constants::PI);
   }
-  virtual Color color() const {
-      return _color;
-  }
-  virtual Color emission() const {
-      return _emit;
-  }
-  virtual bool is_emitter() const { return _emit.luminance() > 0; };
 
   virtual std::ostream& print(std::ostream& os) const {
       return os << BOLD_BLUE("LambertianMaterial") "(" 
-          << BOLD_GREEN("color")"=" << color()
-          << BOLD_GREEN("emission")"=" << emission()
+          << BOLD_GREEN("reflected")"=" << reflected()
+          << BOLD_GREEN("emitted")"=" << emitted()
           << ")";
   }
-private:
-  Color _color;
-  Color _emit;
 };  
 
 #endif /* end of include guard: __LAMBERTIANMATERIAL_H__ */    

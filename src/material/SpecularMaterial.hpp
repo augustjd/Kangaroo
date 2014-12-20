@@ -2,36 +2,41 @@
 
 #include "sampling/Sampler.hpp"
 #include "Constants.hpp"
-#include "Material.hpp"
+#include "BRDFMaterial.hpp"
 #include "geometry/Geometry.hpp"
  
-class SpecularMaterial : public Material {
+struct SpecularBRDF : public BRDF {
+    SpecularBRDF(const Color& _reflected) : reflected(_reflected) {};
+    const Color& reflected;
+    virtual AngleSample sample(double theta_in, Sampler& sampler);
+};
+
+class SpecularMaterial : public BRDFMaterial {
 public:
-  SpecularMaterial(Color color, Color emit) : _color(color), _emit(emit) {};
-  SpecularMaterial() : _color(0.5), _emit(0.0) {};
+  SpecularMaterial(Color reflected) : BRDFMaterial(new SpecularBRDF(reflected)), _reflected(reflected) {};
+  SpecularMaterial() : BRDFMaterial(new SpecularBRDF(Color(0.5))), _reflected(Color(0.5)) {};
   virtual ~SpecularMaterial() {};
 
-  virtual ImportanceRay next(const ImportanceRay& incoming, const Vector3d& position, const Vector3d& normal, Sampler& sampler) {
-      Vector3d direction = Geometry::flip_vector_about(-incoming.direction(), normal);
-      assert(direction.dot(normal) > 0.0);
-      Color importance = incoming.importance * color();
-      return ImportanceRay(position, direction, importance);
+  virtual Color reflected(const Vector3d& position) const {
+      return _reflected;
   }
-  virtual Color color() const {
-      return _color;
+  virtual Color reflected() const {
+      return _reflected;
   }
-  virtual Color emission() const {
-      return _emit;
+  virtual Color emitted(const Vector3d& position) const {
+      return Color(0.0);
   }
-  virtual bool is_emitter() const { return _emit.luminance() > 0; };
+  virtual Color emitted() const {
+      return Color(0.0);
+  }
+  virtual bool is_emitter() const { return false; };
 
   virtual std::ostream& print(std::ostream& os) const {
       return os << BOLD_BLUE("SpecularMaterial") "(" 
-          << BOLD_GREEN("color")"=" << color()
-          << BOLD_GREEN("emission")"=" << emission()
+          << BOLD_GREEN("reflected")"=" << reflected()
+          << BOLD_GREEN("emitted")"=" << emitted()
           << ")";
   }
 private:
-  Color _color;
-  Color _emit;
+  Color _reflected;
 };  

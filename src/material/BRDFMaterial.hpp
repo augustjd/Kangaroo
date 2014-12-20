@@ -15,7 +15,7 @@ struct AngleSample {
     double phi;
 
     // the value associated with this pair of angles according to the BRDF
-    double importance;
+    Color importance;
 };
 
 struct BRDF {
@@ -24,15 +24,13 @@ struct BRDF {
     virtual AngleSample sample(double theta_in, Sampler& sampler) = 0;
 };
 
-class BRDFMaterial : Material {
+class BRDFMaterial : public Material {
 public:
   BRDFMaterial(BRDF* brdf) : _brdf(brdf) {};
   BRDFMaterial(unique_ptr<BRDF> brdf) : _brdf(std::move(brdf)) {};
   virtual ~BRDFMaterial () {};
 
   virtual ImportanceRay next(const ImportanceRay& incoming, const Vector3d& position, const Vector3d& normal, Sampler& sampler);
-  virtual bool is_emitter() const = 0;
-  virtual Color emission() const = 0;
 
 protected:
   virtual std::ostream& print(std::ostream&) const = 0;
