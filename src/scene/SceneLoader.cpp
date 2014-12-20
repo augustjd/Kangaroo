@@ -161,7 +161,6 @@ bool contains(std::map<K,V> m, K key) {
 }
 
 unique_ptr<Scene> SceneLoader::load_from_string(const char* s) {
-    vector<SceneObject*> objects;
     XMLDocument doc;
     doc.Parse(s);
     if (doc.ErrorID() != 0) {
@@ -169,8 +168,14 @@ unique_ptr<Scene> SceneLoader::load_from_string(const char* s) {
     }
 
     XMLElement* root = doc.RootElement();
+    if (!root->FirstChildElement("scene")) {
+        FATAL("Scene file missing <scene> tag.");
+    }
 
-    for (XMLElement* node = root->FirstChildElement();
+    XMLElement* scene_root = root->FirstChildElement("scene");
+
+    vector<SceneObject*> objects;
+    for (XMLElement* node = scene_root->FirstChildElement();
          node != NULL; 
          node = node->NextSiblingElement()) {
         string tag(node->Name());
