@@ -131,6 +131,26 @@ the static map object_loaders according to the tag you wish to use for the
 object (<triangle> means "triangle", etc.).
 
 
+Extending to Multithreading
+---------------------------
+Multithreading would be quite easy to implement, if it weren't for the camera
+controls. Nonetheless it is probably only a day or two of work. The way that the
+render is performed is by initializing a set of Samples, which represent pixels
+and the ray that will be used to determine the value of the pixel. These are
+stored in a vector in the Camera class.
+
+My intent was to split up this vector by assigning each of several threads equal
+length portions of it. Since neighboring pixels are likely to be colored by the
+same object, cache coherency will lead to an important speedup and it is
+worthwhile to have a thread process a contiguous region of pixels.
+
+Anyways, if you just split up the vector into pieces, and had each thread
+process passes on all of the pieces belonging to it, that would be enough to
+make this multithreaded.
+
+Performance was already very good, so I didn't worry about it too much.
+
+
 Dependencies
 ------------
 Kangaroo depends on SFML for its graphical display and image saving, Eigen for
