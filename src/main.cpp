@@ -7,7 +7,7 @@
 
 #include "camera/Camera.hpp"
 #include "camera/Display.hpp"
-#include "scene/SceneLoader.hpp"
+#include "scene/RenderLoader.hpp"
 #include "camera/SquarePixelSamplingStrategy.hpp"
 
 using namespace std;
@@ -41,20 +41,17 @@ int main(int argc, const char** argv)
         scene_file = argv[3];
     }
 
-    unique_ptr<Scene> scene = SceneLoader::load_from_file(scene_file);
-    cout << *scene.get() << endl;
+    unique_ptr<Render> render = RenderLoader::load_from_file(scene_file);
+    cout << render->scene.get() << endl;
 
     sf::RenderWindow window(sf::VideoMode(render_width, render_height), "Kangaroo");
 
     Vector3d x;
 
-    sf::Image image;
-    image.create(render_width, render_height, sf::Color(255,0,0));
+    shared_ptr<sf::Image> image = render->camera->image();
+    Display display(*image);
 
-    Camera camera(image, 45, *scene.get());
-    Display display(image);
-
-    thread cam_thread([&] { camera.sample(); });
+    thread cam_thread([&] { render->camera->sample(); });
     while (window.isOpen())
     {
         sf::Event event;
@@ -73,27 +70,27 @@ int main(int argc, const char** argv)
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            camera.move(Vector3d(5, 0, 0));
+            render->camera->move_right(-5);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            camera.move(Vector3d(-5, 0, 0));
+            render->camera->move_right(5);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
-            camera.move(Vector3d(0, 5, 0));
+            render->camera->move_up(-5);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
-            camera.move(Vector3d(0, -5, 0));
+            render->camera->move_up(5);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LBracket))
         {
-            camera.move_in(-5);
+            render->camera->move_in(-5);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::RBracket))
         {
-            camera.move_in(5);
+            render->camera->move_in(5);
         }
 
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -113,8 +110,8 @@ int main(int argc, const char** argv)
         display.update();
     }
 
-    if (camera.done()) {
-        image.saveToFile("out.png");
+    if (render->camera->done()) {
+        image->saveToFile("out.png");
     }
 
     return 0;

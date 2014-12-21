@@ -1,30 +1,31 @@
 #include <gtest/gtest.h>
 
 #include "scene/Scene.hpp"
-#include "scene/SceneLoader.hpp"
+#include "scene/RenderLoader.hpp"
 #include "geometry/Sphere.hpp"
 
 #include <iostream>
 
 using namespace std;
 
-TEST(SceneLoaderTests, SceneLoadsFromString) {
-    unique_ptr<Scene> scene = SceneLoader::load_from_string(
+TEST(RenderLoaderTests, SceneLoadsFromString) {
+    unique_ptr<Render> render = RenderLoader::load_from_string(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+            "<render>"
             "<scene>"
             "<sphere r=\"3\">"
                 "<position x=\"0\" y=\"0\" z=\"0\">"
                 "</position>"
             "</sphere>"
             "</scene>"
+            "</render>"
             " ");
 
-    ASSERT_EQ(scene->objects().size(), 1);
-    cout << *scene << endl;
+    ASSERT_EQ(render->scene->objects().size(), 1);
 }
 
-TEST(SceneLoaderTests, TriangleLoadsFromString) {
-    unique_ptr<Scene> scene = SceneLoader::load_from_string(
+TEST(RenderLoaderTests, TriangleLoadsFromString) {
+    unique_ptr<Render> render = RenderLoader::load_from_string(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             "<render>"
             "<scene>"
@@ -37,6 +38,5 @@ TEST(SceneLoaderTests, TriangleLoadsFromString) {
             "</render>"
             " ");
 
-    ASSERT_EQ(scene->objects().size(), 1);
-    cout << *scene << endl;
+    ASSERT_EQ(render->scene->objects().size(), 1);
 }

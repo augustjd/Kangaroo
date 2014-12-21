@@ -2,35 +2,21 @@
 #include <fstream>
 #include <map>
 
-#include "SceneLoader.hpp"
+#include "RenderLoader.hpp"
 #include "SceneObject.hpp"
 #include "Formatting.hpp"
 #include "geometry/Sphere.hpp"
 #include "geometry/Triangle.hpp"
 #include "color/Color.hpp"
+#include "camera/Camera.hpp"
+#include "xml/XmlUtilities.hpp"
 
 #include "material/Material.hpp"
 #include "material/LambertianMaterial.hpp"
 #include "material/SpecularMaterial.hpp"
 #include "material/TransparentSpecularMaterial.hpp"
- 
-#include "xml/tinyxml2.hpp"
 
-using namespace std;
-using namespace tinyxml2;
-
-
-static Vector3d load_vector(const XMLElement* el) {
-    return Vector3d(el->DoubleAttribute("x"),
-                    el->DoubleAttribute("y"),
-                    el->DoubleAttribute("z"));
-}
-
-static Color load_color(const XMLElement* el) {
-    return Color(el->DoubleAttribute("r"),
-                 el->DoubleAttribute("g"),
-                 el->DoubleAttribute("b"));
-}
+using std::shared_ptr;
 
 struct MaterialLoader {
     virtual Material* load(const XMLElement* el) = 0;
@@ -133,7 +119,7 @@ struct SceneObjectLoader {
 
 struct SphereLoader : SceneObjectLoader {
     Sphere* load_surface(const XMLElement* el) {
-        return new Sphere(load_vector(el->FirstChildElement("position")), el->DoubleAttribute("r"));
+        return new Sphere(load_xml<Vector3d>(el->FirstChildElement("position")), el->DoubleAttribute("r"));
     }
 };
 
@@ -141,9 +127,9 @@ struct TriangleLoader : SceneObjectLoader {
     Triangle* load_surface(const XMLElement* el) {
         const XMLElement* point_iterator = el->FirstChildElement("point");
 
-        Vector3d v1 = load_vector(point_iterator);
-        Vector3d v2 = load_vector(point_iterator->NextSiblingElement());
-        Vector3d v3 = load_vector(point_iterator->NextSiblingElement()->NextSiblingElement());
+        Vector3d v1 = load_xml<Vector3d>(point_iterator);
+        Vector3d v2 = load_xml<Vector3d>(point_iterator->NextSiblingElement());
+        Vector3d v3 = load_xml<Vector3d>(point_iterator->NextSiblingElement()->NextSiblingElement());
 
         return new Triangle(v1, v2, v3);
     }
@@ -160,7 +146,7 @@ bool contains(std::map<K,V> m, K key) {
     return m.find(key) != m.end();
 }
 
-unique_ptr<Scene> SceneLoader::load_from_string(const char* s) {
+unique_ptr<Render> RenderLoader::load_from_string(const char* s) {
     XMLDocument doc;
     doc.Parse(s);
     if (doc.ErrorID() != 0) {
@@ -172,10 +158,20 @@ unique_ptr<Scene> SceneLoader::load_from_string(const char* s) {
         FATAL("Scene file missing <scene> tag.");
     }
 
-    XMLElement* scene_root = root->FirstChildElement("scene");
+    XMLElement* scene_root  = root->FirstChildElement("scene");
+    XMLElement* camera_root = root->FirstChildElement("camera");
 
+    unique_ptr<Scene> scene = load_scene(scene_root);
+    Render* render = new Render { std::move(scene),
+                                  std::move(load_camera(camera_root, scene.get())) };
+
+    return unique_ptr<Render>(render);
+}
+
+unique_ptr<Scene> RenderLoader::load_scene(const XMLElement* el) {
     vector<SceneObject*> objects;
-    for (XMLElement* node = scene_root->FirstChildElement();
+
+    for (const XMLElement* node = el->FirstChildElement();
          node != NULL; 
          node = node->NextSiblingElement()) {
         string tag(node->Name());
@@ -187,16 +183,26 @@ unique_ptr<Scene> SceneLoader::load_from_string(const char* s) {
 
     return unique_ptr<Scene>(new Scene(objects));
 }
+unique_ptr<Camera> RenderLoader::load_camera(const XMLElement* el, const Scene* scene) {
+    if (el == NULL) return default_camera(scene);
+    else return Camera::load_from_xml(el, scene);
+}
 
-unique_ptr<Scene> SceneLoader::load_from_string(const string& s) {
+unique_ptr<Camera> RenderLoader::default_camera(const Scene* scene) {
+    shared_ptr<sf::Image> image = shared_ptr<sf::Image>(new sf::Image());
+    image->create(800, 600, sf::Color(255,0,0));
+    return unique_ptr<Camera>(new Camera(image, 45, *scene));
+}
+
+unique_ptr<Render> RenderLoader::load_from_string(const string& s) {
     return load_from_string(s.c_str());
 }
 
-unique_ptr<Scene> SceneLoader::load_from_file(const char* path) {
+unique_ptr<Render> RenderLoader::load_from_file(const char* path) {
     return load_from_string(load_file(path));
 }
 
-unique_ptr<Scene> SceneLoader::load_from_file(const string& path) {
+unique_ptr<Render> RenderLoader::load_from_file(const string& path) {
     return load_from_string(load_file(path.c_str()));
 }
 
@@ -210,7 +216,7 @@ inline static size_t size_of_file(ifstream& f) {
     return size;
 }
 
-string SceneLoader::load_file(const char* path) {
+string RenderLoader::load_file(const char* path) {
     using namespace std;
 
     ifstream f(path);

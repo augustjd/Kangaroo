@@ -10,7 +10,7 @@ using std::vector;
 using std::shared_ptr;
 
 class Scene {
-    friend class SceneLoader;
+    friend class RenderLoader;
 public:
     Scene() {
     }

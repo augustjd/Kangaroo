@@ -14,23 +14,26 @@
 #include "geometry/ImportanceRay.hpp"
 #include "camera/tracer/Tracer.hpp"
 #include "camera/tracer/DepthPathTracer.hpp"
+#include "xml/XmlUtilities.hpp"
 
+#include "xml/tinyxml2.hpp"
 
 using namespace Eigen;
 using std::vector;
+using namespace tinyxml2;
 
 static Sampler sampler;
 class Camera {
     static constexpr size_t default_passes = 20;
 public:
-    Camera(sf::Image& image, unsigned int fovx, const Scene& scene) :
+    Camera(shared_ptr<sf::Image>& image, double fovx, const Scene& scene) :
         _image(image), 
-        _width(image.getSize().x), 
+        _width(image->getSize().x), 
         _passes(default_passes),
         _up(0,1,0),
         _direction(0,0,1),
-        _height(image.getSize().y), 
-        _focal_length(fabs((image.getSize().x / 2.0)/tan(Constants::degrees_to_radians(fovx/2.0)))), 
+        _height(image->getSize().y), 
+        _focal_length(fabs((image->getSize().x / 2.0)/tan(Constants::degrees_to_radians(fovx/2.0)))), 
         _scene(scene),
         _done(false),
         _reset(false),
@@ -41,15 +44,15 @@ public:
         initialize_samples();
     };
 
-    Camera(size_t passes, Vector3d position, Vector3d up, sf::Image& image, unsigned int fovx, const Scene& scene) :
+    Camera(size_t passes, Vector3d position, Vector3d up, shared_ptr<sf::Image>& image, double fovx, const Scene& scene) :
         _image(image), 
-        _width(image.getSize().x), 
+        _width(image->getSize().x), 
         _passes(passes),
         _position(position),
         _direction(0,0,1),
         _up(up.normalized()),
-        _height(image.getSize().y), 
-        _focal_length(fabs((image.getSize().x / 2.0)/tan(Constants::degrees_to_radians(fovx/2.0)))), 
+        _height(image->getSize().y), 
+        _focal_length(fabs((image->getSize().x / 2.0)/tan(Constants::degrees_to_radians(fovx/2.0)))), 
         _scene(scene),
         _done(false),
         _reset(false),
@@ -61,12 +64,22 @@ public:
 
     virtual ~Camera() {};
 
+    shared_ptr<sf::Image> image() const { return shared_ptr<sf::Image>(_image); };
+
     size_t width() { return _width; };
     size_t height() { return _height; };
     size_t pixels() { return _width * _height; };
 
     void move(Vector3d offset) {
         set_position(_position + offset);
+    }
+
+    void move_right(double distance) {
+        set_position(_position + _right * distance);
+    }
+
+    void move_up(double distance) {
+        set_position(_position + _up * distance);
     }
 
     void move_in(double distance) {
@@ -119,7 +132,7 @@ public:
             t1 = std::chrono::high_resolution_clock::now();
             for(Sample& s : samples) {
                 s += _tracer->trace(_scene, s.ray);
-                _image.setPixel(s.x, s.y, s.as_sfml_color());
+                _image->setPixel(s.x, s.y, s.as_sfml_color());
             }
             t2 = std::chrono::high_resolution_clock::now();
 
@@ -137,6 +150,8 @@ public:
     }
 
     bool done() const { return _done; };
+
+    static unique_ptr<Camera> load_from_xml(const XMLElement* el, const Scene* scene);
 
 private:
     sf::Color sample(Sample& sample) {
@@ -202,7 +217,7 @@ private:
     Vector3d _up;
     Vector3d _right;
 
-    sf::Image& _image;
+    shared_ptr<sf::Image> _image;
     const Scene& _scene;
 
     size_t _width;
