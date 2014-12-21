@@ -13,9 +13,6 @@
 using namespace std;
 using namespace Eigen;
 
-static const size_t DEFAULT_RENDER_WIDTH = 800;
-static const size_t DEFAULT_RENDER_HEIGHT = 400;
-
 struct MouseLocation {
     Vector2d position;
 };
@@ -24,27 +21,23 @@ static MouseLocation* location = NULL;
 
 int main(int argc, const char** argv)
 {
-    int render_width, render_height;
     const char* scene_file;
-    if (argc < 2 || argc > 4) {
-        cerr << "Usage: ./scene [WIDTH] [HEIGHT] <scene_file>" << endl;
+    const char* output_file = NULL;
+    if (argc < 2) {
+        cerr << "Usage: ./scene <scene_file> <output_file>" << endl;
         exit(1);
-    } else if (argc < 3) {
-        render_width  = DEFAULT_RENDER_WIDTH;
-        render_height = DEFAULT_RENDER_HEIGHT;
-
+    } else {
         scene_file = argv[1];
-    } else if (argc == 4) {
-        render_width  = atoi(argv[1]);
-        render_height = atoi(argv[2]);
+    }
 
-        scene_file = argv[3];
+    if (argc > 2) {
+        output_file = argv[2];
     }
 
     unique_ptr<Render> render = RenderLoader::load_from_file(scene_file);
     cout << render->scene.get() << endl;
 
-    sf::RenderWindow window(sf::VideoMode(render_width, render_height), "Kangaroo");
+    sf::RenderWindow window(sf::VideoMode(render->camera->width(), render->camera->height()), "Kangaroo");
 
     Vector3d x;
 
@@ -78,11 +71,11 @@ int main(int argc, const char** argv)
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
-            render->camera->move_up(-5);
+            render->camera->move_up(5);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
-            render->camera->move_up(5);
+            render->camera->move_up(-5);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LBracket))
         {
@@ -110,8 +103,8 @@ int main(int argc, const char** argv)
         display.update();
     }
 
-    if (render->camera->done()) {
-        image->saveToFile("out.png");
+    if (render->camera->done() && output_file != NULL) {
+        image->saveToFile(output_file);
     }
 
     return 0;

@@ -41,7 +41,7 @@ public:
      return v;
  }
  Vector3d random_direction_in_hemisphere(const Vector3d& pole) {
-     return Geometry::align_vectors_matrix(Vector3d(0, 1, 0), pole) * random_direction_in_hemisphere();
+     return Geometry::align_vectors_matrix(Vector3d(0, 1, 0), pole.normalized()) * random_direction_in_hemisphere();
  }
 
  unsigned long seed() { return _seed; };

@@ -6,7 +6,7 @@
 #include "SampleTests.hpp"
 #include "TriangleTests.hpp"
 #include "SquarePixelSamplingStrategyTests.hpp"
-#include "SceneLoaderTests.hpp"
+#include "RenderLoaderTests.hpp"
 #include "ThreadUtils.hpp"
 
 #include <iostream>

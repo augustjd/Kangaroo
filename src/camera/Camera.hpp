@@ -44,12 +44,12 @@ public:
         initialize_samples();
     };
 
-    Camera(size_t passes, Vector3d position, Vector3d up, shared_ptr<sf::Image>& image, double fovx, const Scene& scene) :
+    Camera(size_t passes, Vector3d position, Vector3d up, Vector3d direction, shared_ptr<sf::Image>& image, double fovx, const Scene& scene) :
         _image(image), 
         _width(image->getSize().x), 
         _passes(passes),
         _position(position),
-        _direction(0,0,1),
+        _direction(direction),
         _up(up.normalized()),
         _height(image->getSize().y), 
         _focal_length(fabs((image->getSize().x / 2.0)/tan(Constants::degrees_to_radians(fovx/2.0)))), 
@@ -70,19 +70,19 @@ public:
     size_t height() { return _height; };
     size_t pixels() { return _width * _height; };
 
-    void move(Vector3d offset) {
+    virtual void move(Vector3d offset) {
         set_position(_position + offset);
     }
 
-    void move_right(double distance) {
+    virtual void move_right(double distance) {
         set_position(_position + _right * distance);
     }
 
-    void move_up(double distance) {
+    virtual void move_up(double distance) {
         set_position(_position + _up * distance);
     }
 
-    void move_in(double distance) {
+    virtual void move_in(double distance) {
         set_position(_position + _direction * distance);
     }
 
@@ -90,8 +90,6 @@ public:
         _position = position;
         _right = _direction.cross(_up).normalized();
         _reset = true;
-
-        cout << "New camera position:" << vector_to_str(position) << endl;
     }
 
     void set_up(Vector3d up) {

@@ -2,18 +2,22 @@
 #define __GEOMETRY_H__
 
 #include <Eigen/Dense>
+#include <Eigen/Geometry>
 
 using namespace Eigen;
 
 class Geometry {
 
 public:
-    static Matrix3d align_vectors_matrix(Vector3d a, Vector3d b) {
-        a.normalize();
-        b.normalize();
+    static Matrix3d align_vectors_matrix(const Vector3d& a, const Vector3d& b) {
+        double theta = acos(a.dot(b));
+        Vector3d axis = a.cross(b).normalized();
 
-        Matrix3d m = Matrix3d::Identity();
-        Vector3d v = a.cross(b);
+        Matrix3d rotation;
+        rotation = AngleAxisd(theta, axis);
+        return rotation;
+        /*
+        Vector3d v = a.cross(b).normalized();
 
         Matrix3d skew;
         skew << 0, -v[2], v[1],
@@ -24,6 +28,7 @@ public:
         double s = v.norm();
 
         return Matrix3d::Identity() + skew + (skew * skew * (1 - c / (s*s)));
+        */
     }
     static Vector3d flip_vector_about(Vector3d x, Vector3d about) {
         Matrix3d align = align_vectors_matrix(x, about);

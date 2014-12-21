@@ -5,7 +5,6 @@
 #include "color/Color.hpp"
 
 #define PERTURBATION 0.001
-#define DO_PERTURBATION
 
 #define MINIMUM_IMPORTANCE 0.001
 class DepthPathTracer : public Tracer {
@@ -23,17 +22,21 @@ public:
 #else
         ImportanceRay ray = first_ray;
 #endif
-        bool check = false;
+        const SceneObject* last = NULL;
         for (int i = 0; i < depth; i++) {
             Intersection intersection = scene.closest_intersection(ray);
             if (intersection.isNone()) {
                 break;
             }
+            if (last == &intersection.object()) {
+                //break;
+            }
             color += 
                 (ray.importance * intersection.object().material->emitted(intersection.location()))
                 * fabs(ray.direction().dot(intersection.normal()));
 
-            ray = intersection.object().next(ray, intersection, _sampler);   
+            ray = intersection.object().next(ray, intersection, _sampler);
+            last = &intersection.object();
 
             if (ray.importance.luminance() < MINIMUM_IMPORTANCE) {
                 break;

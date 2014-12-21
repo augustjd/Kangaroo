@@ -14,7 +14,7 @@ public:
 
   virtual ImportanceRay next(const ImportanceRay& incoming, const Vector3d& position, const Vector3d& normal, Sampler& sampler) {
       Vector3d direction = sampler.random_direction_in_hemisphere(normal);
-      return ImportanceRay(position, direction, incoming.importance * 1.0 / Constants::PI);
+      return ImportanceRay(position + direction * 0.01, direction, incoming.importance * 1.0 / Constants::PI);
   }
 
   virtual std::ostream& print(std::ostream& os) const {
