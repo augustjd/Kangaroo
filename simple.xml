@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<render>
+  <camera>
+    <position x='0' y='0' z='-100'></position>
+    <direction x='0' y='0' z='1'></direction>
+    <up x='0' y='1' z='0'></up>
+
+    <passes>100</passes>
+    <image width='800' height='800'></image>
+
+    <fovx>35</fovx>
+  </camera>
+
+  <scene>
+
+    <sphere r='100'>
+      <position x='0' y='0' z='900'></position>
+      <material>
+        <type>Lambertian</type>
+        <emit r='0.2' g='1.5' b='2.0'></emit>
+        <color r='0' g='0' b='0'></color>
+      </material>
+    </sphere>
+
+    <triangle>
+      <point x='-10000' y='-10000' z='1000'></point>
+      <point x='10000' y='-10000' z='1000'></point>
+      <point x='0' y='10000' z='1000'></point>
+      <material>
+        <type>Lambertian</type>
+        <color r='0.4' g='0.4' b='0.4'></color>
+      </material>
+    </triangle>
+
+  </scene>
+</render>
