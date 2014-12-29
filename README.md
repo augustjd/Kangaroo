@@ -167,14 +167,3 @@ Dependencies
 Kangaroo depends on SFML for its graphical display and image saving, Eigen for
 vector math, and gtest for testing. These dependencies should be satisfied by
 CMake, but if not, you can install them manually and try again.
-
---------------
-
-In closing, I must explain that I couldn't dedicate as much time as I would have
-liked to this project. A startup I am a part of has recently been offered an
-incredible opportunity in the spring, and I have felt that my time was better
-spent working towards that project than this one. I enjoyed the class, and it's
-unfortunate that I didn't have more time to commit to it. I hope you have a nice
-break.
-
-- Josh
