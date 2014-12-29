@@ -1,12 +1,17 @@
-jda2158
-Joshua Augustin
-
 Final Project: Kangaroo Renderer
 ================================
 
 Kangaroo Renderer is a progressive, fast renderer with real-time camera
 controls. I tried to make it easily extensible, with use of abstract classes
 wherever possible to enable future improvements.
+
+Compiling
+---------
+To compile, simply type 
+
+	make
+
+This should create a build directory, run CMake, and then compile the program.
 
 Usage
 -----
@@ -25,6 +30,7 @@ Render Files
 Kangaroo processes render files, which describe both a camera and the scene that is
 being rendered. A simple example:
 
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <render>
   <scene>
@@ -50,6 +56,7 @@ being rendered. A simple example:
 
   </scene>
 </render>
+```
 
 Render files must have <render> as the root tag, and then a scene, specified
 under a <scene> tag. Currently, only triangles and spheres are supported. Their
@@ -57,11 +64,13 @@ specifications should be easy to understand from the example above. Multiple
 objects of each type can be added by simply using more tags.
 
 In the future, meshes could be added using this syntax:
+```xml
     <mesh>
       <position x='-10' y='0' z='0'></position>
       <up x='0' y='1' z='0'></up>
 			<file>./bunny.obj</file>
     </mesh>
+```
 
 This would load up a mesh from the provided obj file and instantiate it in the
 world at a provided position, and with the y-axis of the model pointing at the
@@ -70,6 +79,7 @@ provided "up" axis.
 Specifying the Camera
 ---------------------
 The camera position can also be specified in the render file like this:
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <render>
   <camera>
@@ -86,6 +96,7 @@ The camera position can also be specified in the render file like this:
 	...
   </scene>
 </render>
+```
 
 Direction is the direction the camera is pointing. Up is the up direction of the
 camera. Passes is the number of samples per pixel. <image> allows you to specify
